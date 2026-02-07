@@ -211,3 +211,11 @@ https://docs.celonis.com/en/using-error-handlers-in-action-flows.html
 - stop
   - rollback: stops the Action Flow execution immediately and marks its status as an error
   - commit: stops the Action Flow execution immediately and marks its status as a success
+
+
+## SAP
+
+### Action Types
+- Out of the box SAP actions: Out-of-the-box SAP actions are configured easily by both business users and SAP experts regardless of their experience with SAP. Similar to any other action (e.g. Weather - Get current weather, Slack - Create a message) in Action Flows.
+- Advanced SAP actions: Your keyword being: Generic Remote Function Call (RFC). 
+
