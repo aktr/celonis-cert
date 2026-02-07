@@ -76,7 +76,7 @@ access: https://fox57xlh-2026-02-04.training.celonis.cloud/package-manager/ui/vi
 - **maintain** all your connections on the **global page Connections**.
 
 ### Agents
--  installed in the **customer’s server environment**
+-  installed in the **customer's server environment**
 -  **selectively access** customer-authorized **on-premises apps**
 - one Celonis Agent to connect to an **arbitrary number of on-prem systems** int the **same network**
 
@@ -105,22 +105,12 @@ access: https://fox57xlh-2026-02-04.training.celonis.cloud/package-manager/ui/vi
 ### Debugging
 - **History** (right) and **Statistics** (bottom) helps you 
 
-#### Directives of handling errors
-- Rollback
-- Break
-- Resume
-- Commit
-- Ignore
-
 ## Schedule an Action Flow
-
 - editabel only in "view mode"
 - At regular intervals is leveraged. 
   - Using this option you can set up a trigger to execute on different days and times in different months. 
 - Advanced Settings to set up an overall start date and end date 
   -  These settings will override any individual configuration you have set up. Meaning: If one of your schedule items has a date outside this date range, it will not be triggered.
--  
-
 
 ## Trigger Action Flows from Knowledge Models
 
@@ -140,13 +130,13 @@ access: https://fox57xlh-2026-02-04.training.celonis.cloud/package-manager/ui/vi
 ### Robotic Processing Automation:
 - emulates click path
 - automates repetitive rule-based tasks
-- not the same as ai. RPAs only perform tasks
+- not the same as AI. RPAs only perform tasks
 
 ### Why
 - Increading number of automation use cases. Multiple use cases require automation actions in the front end UI
 - Maximize a single Action Flow to combine API-led automation of Action Flows with UI;led automation of RPAs
 
-How
+### How
 - Query Data Module - > Trigger the bot (RPA app) -> Router
 
 
@@ -160,13 +150,12 @@ Actions: Actions are **links between an Action Flow and a button** in the Celoni
 ### Attended
 - when human judgment is needed. 
 - Some Actions require the user
-- created via the Knowledge Mode
+- created via the Knowledge Model
 - The end goal of building Actions in Views is to enable the business user to apply an automated action to an item that they see in their front-end View
 
 ### Actions
-- build in KM by Analyst
+- build in Knowledge Model by Analyst
 - linked to only **one record** and **one Action Flow**
-
 
 
 ### Send http requests in Action Flows
