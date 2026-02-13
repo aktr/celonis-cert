@@ -1,6 +1,6 @@
 # Write PQL queries
 url: https://academy.celonis.com/learning-paths/build-analyses-advanced
-access: https://fox57xlh-2026-02-04.training.celonis.cloud/package-manager/ui/views/ui/spaces
+access: https://fox57xlh-2026-02-04.training.celonis.cloud
 
 ## PQL Engine
 
