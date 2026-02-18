@@ -2,6 +2,14 @@
 url: https://academy.celonis.com/learn/learning-path/get-data-into-the-ems-1
 access: https://fox57xlh-2026-02-04.training.celonis.cloud
 
+flat: JMLEUQCTIZZRCBWXANRM
+flat: HOPGUESJZWOGBEDVYSKOLDSBHITWHMYWIVSZZZKI
+nested: AGXDBNMYCZGXUCQLCABA  
+nested: XFHELQGBVZRDAECTMZUAFEHEXMSWNRBCSZEQEVCI
+
+REST id: 9b38a250-525b-42d6-95aa-a68ce848ad14
+REST secret: fd64skZtraiM0BzPHuVHfx5gIHwEB88wI308xKRgKsu2ItejG7mXaDAhthkpYItv
+
 ## Data Integration Basics
 - Process Data is a set of connected activities with timestamps following one specific case = tracking steps 
 - Data Model connects
@@ -325,7 +333,7 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
 ### How to
 1. create Activity Table
 2. Create case table and master data tables
-3. Crreate relationships between tables in the Data Model (foreign key)
+3. Create relationships between tables in the Data Model (foreign key)
 4. explicit assign case table
 
 - Dimension table (1) and the Fact table (N)
@@ -380,34 +388,7 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
 3. Uses DAG to trigger all extraction and transformation tasks based on the optimal calculated execution order. For example, once a table is extracted, the related transformations start automatically (while independent tables might still be in extraction).
 
 
------ 
-Build an Object-Centric Data Model
-
-## Object-Centric Process Mining: Foundations
-### CCMP  
-- tracks one object (case) per process and maps all process events into a sequential event log
-- Value:
-  - providing insight into processes based on the chosen case perspective.
-  - allowing businesses to uncover and fix process inefficiencies.
-  - helping businesses to track process performance against specific KPIs.
-  - allowing businesses to fully or partially automate actions based on process data.
-Limitation:
-  - restricted perspective
-  - Incomplete information, like Duplicates events or missing events
-
-
-### OCMP
-- case
-  - Restricted perspective: A limited, fragmented, and fixed perspective	
-  - Incomplete information: Missing information and context based on selected case in event logs
-  - High Effort: Higher start and update effort due to SQL-based event logs	
-  - System dependence: Low scaling due to source system dependent scripts	
-- object
-  - Flexible multiple perspectives based on a single standardized model
-  - More accuracy thanks to object modeling
-  - Lower start and update effort thanks to UI-based modeling
-  - Better scaling thanks to standardized and system-agnostic objects
-
+## Monitor and Validate your Data Pipeline (optional)
 
 ## Connect Multiple Systems
 #### parallel scenario: one system per country
@@ -455,7 +436,7 @@ Limitation:
   - Schedules.
   - NOT Data permissions
   - NOT Data Connection details,
-  - NOIT actual data
+  - NOT actual data
 - you can copy a data pool
 - you can copy datat jobs
   - Extractions
@@ -466,3 +447,271 @@ Limitation:
   - NOT Data Model Load tasks
   - NOT Job alerts
   - NOT The tables and data  
+
+
+## Extraction Performance Best Practices (optional)
+- Enables data consistency for delta extractions, enables resumable/restartable extractions, increases performance.
+
+## Boost your SQL Transformations
+### Extract only the Necessary Data
+- adjust process connectors, to make sure they extract only necessary tables]
+- trim large tables (do you need all columns?)
+- use extraction filters
+
+### EXPLAIN plan
+- written **before** SELECT statement
+- estimated query cost:
+- join type: 
+  - merge join: If both tables are pre-sorted on the join column(s), the Vertica optimizer chooses a merge join, which is faster and uses considerably fewer resources than a hash join.
+  - hash join: If tables are NOT sorted on the join column(s), the optimizer chooses a hash join
+- A merge join will always be more efficient and use considerably less memory than a hash join. But it's not necessarily faster. If the data set is very small, a hash join may process faster but this is very rare.
+- How to sort to get a merge join?
+  - place key columns at the beginning (e.g., MANDT, VBELN, POSNR) of the CREATE TABLE statement,
+  - Or add an explicit ORDER BY { key columns } clause at the end of the CREATE TABLE statement.
+
+### Table Statistics
+- summaries of tables that assist the query optimizer in making better decisions
+- **source** table statistics are automatically gathered for each table after the extraction.
+- For additional tables created during the transformation phase—e.g., the temporary join table TMP_CDHDR_CDPOS, or data model tables you create—it's necessary to create statistics explicitly. In general, we recommend you add statistics to all tables created and used in your transformations.
+- Also, if you significantly change existing tables with INSERTs, DELETEs, or UPDATES, we advise you refresh statistics.
+- For tables that have less than 10K records, we do not recommend creating statistics.  This is because the effort to create the statistics for these small tables in Vertica outweighs the time saved by the statistics.
+- Why are table statistics so important: Among many benefits, table statistics are especially crucial for query execution plans with hash joins. They enable the query optimizer to choose the smaller table to build the hash table (instead of the bigger one). In most scenarios, this prevents an “inner join did not fit into memory” error and improves performance.
+- How  to create statistics : `SELECT ANALYZE_STATISTICS ('TABLE_NAME');`
+- how to check if there are statistics:
+```
+SELECT anchor_table_name AS TableName
+FROM projections
+WHERE has_statistics = FALSE ;
+```
+
+### General Best Practices
+- WHERE EXISTS instead of JOIN: when you just filter and do not need the column
+- do not use DISTINCT
+- Use UNION ALL instead of UNION
+- Use BETWEEN instead of AND for Ranges
+
+### Temporary Join Tables
+- Auto-projections: all table columns and are sorted by the first 8 fields
+- you can add custom projections
+
+- Common Table Expressions
+  - for OCPM Transformations
+  - "WITH ... AS" statement
+
+### RECAP
+- CREATE TABLE	
+  - If the query contains complex definitions (e.g., multiple joins and conditions)
+  - If other transformations (e.g., Activity scripts) are accessing the query result
+- CREATE TEMPORARY TABLE	
+  - If you use similar joins multiple times within one transformation task
+- CREATE VIEW	
+  - If the query simply selects the records from a single table (e.g., VBAP) and applies simple conditions.
+  - In general, should be mostly limited to data model tables
+- WITH ... AS ()
+  - Common Table Expression (CTE)	
+  - [Used in OCPM transformations] If the query contains complex definitions and/or repetitive joins.
+  - Unlike a temporary table, CTE is not stored in memory or on disk. It's meant to improve readability and can be referenced multiple times within the same query.
+
+https://academy.celonis.com/learn/course/sql-best-practices/transformation-best-practices/course-recap-and-next-steps?client=partner&page=1
+
+### Staging Tables
+- Best practice for **Data Model** in CCMP
+- One staging table with all joins. View on top of this tabel which use only one join with the staging table
+
+### Table Terminology
+https://academy.celonis.com/learn/course/sql-best-practices/transformation-best-practices/usage-of-tables-temporary-tables-views-and-ctes?client=partner&page=4
+
+
+### DELETE and UPDATE Statements
+- Avoiding DELETE and UPDATE
+- Rebuild Tables instead of DELETE and UPDATE
+  - create new table and drop old one (and add table statistics)
+- if you really neddd DELETE/UPDATE use smaller parts/chunks `DELETE FROM BSEG WHERE GJAHR=2020;` 
+- When limiting the query through a condition, select a field that appears at the beginning of the table field 
+
+### Avoid Business Logic in Transformations
+- Business logic (KPI calculations, formulas, analyses, statistical evaluations, if/then/else) belong in the knowledge model
+
+
+## Data Model Load Performance Best Practices (Optional)
+- On top of delta extractions and delta transformations, you can set up delta data model loads
+  - Each table needs an identifier (primary key) in the data model
+  - Add the "epoch" column to each view in your data model. This column is available hidden in each table.
+- Partial Data Model Load
+  - selectively reload individual tables of a data model.
+- Reduce or Disable Cache Preheating
+  - Prheating cache for PQL. Mayeb makes no sense when fast data model load has a higher priority than a fast frontend performance
+  
+
+## General ETL Pipeline Performance Best Practices (Optional)
+- Split the ETL Pipeline Based on the Type of Use
+  - Analytics use-cases 
+  - Operational use-cases
+- Parallel ETL Based on Target Group
+  - reating dedicated data pipelines for each region, country, business unit, or factory
+- Use Trigger Based Schedules
+  - based on the successful execution
+  - avoids unnecessary waiting
+  - using trigger-based schedules, For sequential data jobs **across** data pools. Within Datapool use "optimized schedule execution"
+- Optimize Data Pool Architecture
+  - Every table is only extracted once(exceptions possible) from a source system.
+  - Extracted tables can be used by all projects (data pools) simultaneously.
+  - Not every user can access every table and every record.
+  - Data preparation, business logic, formatting, consolidations, etc. should be managed centrally and consumed by all projects.
+
+## Push Data into Celonis (Data Ingestion API's )
+### Specifications
+- One API call per table: Every table you create or update requires one API call.
+- Built on S3 API: It's built on top of the S3 API with the same methods and error codes. It uses primarily this S3 PUT object endpoint.
+- Continuous load: The load is continuous. So as soon as you ping the API, your data is loaded into Celonis. It operates on a First In First Out (FIFO) principle.
+- Auto-delta load: All pushed records are loaded as delta records automatically and compared to existing records.
+- Nested data possible: The API can handle nested (json) data out-of-the-box and unnest it into tables and columns.
+- UI schema configuration: It supports a UI based configuration for table schema, i.e. table names, keys, age columns.
+- Parquet files only: As of today, the API only supports parquet files and requires you to convert to parquet before pushes.
+
+### Usecases
+- Existing data applications: data resides or is processed through other data applications such as:
+  - ETL tools (e.g. Informatica)
+  - Streaming Applications (e.g. Kafka)
+  - IPaaS (e.g. Mulesoft)
+  - Other scripts or Action Flows that rely on the older Data Push API or Continuous Data Push API
+  - Ongoing file pushes
+- Security concerns: data needs to be pushed into Celonis for security reasons, e.g. access to the underlying source cannot be granted.
+
+- Replacement for Scripts and Actions Flows based on older APIs: much simpler Data Ingestion API.
+- Ongoing file pushes: Many projects initially start with file pushes for a quick data check. This initial push is normally done using the file uploader. That said if pushing files (parquet) should be the long-term approach, then the Data Ingestion API is the right way to go.
+
+### FAQ
+- it's push, so no schedules
+- Schema changes: As long as the primary key remains the same, a push with new columns will simply add the columns to the existing table and enter Null values if an older column is excluded.
+- Delta loads
+  - Delta loads (updates or new records) rely on the Primary Key and the Age field. The Age field is typically a date column that indicates when a record was created or updated.
+  - If a new record is inserted with the same Primary Key value, then the one with the latest date is retained.
+  - If no Age field is defined, then the new push's record is kept and updates the existing one.
+  - Note that you can only define the Age column at the top table level. Nested tables rely solely on their primary keys and the parent table's fields for delta logic.
+
+## Extractor Builder Basics
+### When to use it
+1. No existing extractor: There is no existing extractor for your source system and your source system allows access to source data via REST APIs.
+2. Customize existing extractor: There is an existing extractor but you would like to customize it to your needs. You could for example:
+
+### Extractor Templates
+- you can only customize custom templates.
+- Celonis-built template are copied and the customized
+
+### Filters
+- static
+- use the parameter as a filter
+
+### Dependent Endpoints
+- dependent endpoint takes another endpoint’s output as its input.
+
+
+
+
+----- 
+Build an Object-Centric Data Model
+
+## Object-Centric Process Mining: Foundations
+### CCMP  
+- tracks one object (case) per process and maps all process events into a sequential event log
+- Value:
+  - providing insight into processes based on the chosen case perspective.
+  - allowing businesses to uncover and fix process inefficiencies.
+  - helping businesses to track process performance against specific KPIs.
+  - allowing businesses to fully or partially automate actions based on process data.
+Limitation:
+  - restricted perspective
+  - Incomplete information, like Duplicates events or missing events
+
+
+### OCMP
+- case
+  - Restricted perspective: A limited, fragmented, and fixed perspective	
+  - Incomplete information: Missing information and context based on selected case in event logs
+  - High Effort: Higher start and update effort due to SQL-based event logs	
+  - System dependence: Low scaling due to source system dependent scripts	
+- object
+  - Flexible multiple perspectives based on a single standardized model
+  - More accuracy thanks to object modeling
+  - Lower start and update effort thanks to UI-based modeling
+  - Better scaling thanks to standardized and system-agnostic objects
+
+#### Objects
+Expense Report
+Expense Line
+Expense Category
+User
+#### Events
+Create Report
+Send to Approver
+Send Back to Creator for Correction
+Change Amount
+Approve Report
+Reject Report
+
+
+### Create Objects
+- Manually create the objects, relationships, and transformations.
+- OR import your objects from tables
+
+- Each object has
+  - a name
+  - attributes (including an ID)
+  - relationships
+  - transformation scripts 
+  - To put it simply, the goal of your work with objects is to create their shell (name and attributes), identify how they relate to each other (relationships), and fill the object shells and relationships with data (transformations).
+
+#### Relationships
+   m:1 relationships" a foreign key is added as an attribute to the object on the m side.
+
+
+- Handling m:n relationships
+  - an extra join table needs to be created to map the relationship.
+  
+### Tables and Table Names
+https://academy.celonis.com/learn/course/build-object-centric-data-models/build-object-centric-data-models/build-your-object-centric-data-model?client=partner&page=12
+- t_c_o_custom_Category
+  - t = dev env, c = changes, o = object, custom = for types you create
+
+o_custom = same as data input model
+c_o_custom = objects and there state through the process (joined with changes)
+e_custom = events
+r_e_custom_Eventname_Object = r_e_custom_SendToApprover__Expense = event relationships for one 2 many
+
+
+- As stated above, for events, all "involves many" relationships lead to relationship scripts.
+- Your relationship script will create an extra table in the database to map every event instance to every related expense line. A sample table would look like this:
+
+Perspective:
+- In the case-centric approach, we define data tables, link them and then load them into a data model.
+- In the object-centric approach, we define objects, events, and their relationships. We then choose which objects to include in a perspective. Each defined perspective becomes a data model we can load and use.
+
+
+
+### Eventlog in Perspective
+- For each object in your perspective an event log is automatically created
+
+Define your own when:
+- if you want to define a default event log to use in the Studio (e.g., in a Process Explorer). For custom processes, we recommend you define a default event log.
+- if you want to create an event log that only includes certain events
+- if you want to create an event log on a lead object and include events indirectly connected. E.g., You could add the "Change amount" event to the Report object. This is indirect as the "Change amount" event is only directly related to the Expense object.
+
+Perspective =  create a sliced datamodel
+
+
+### CCMP vs OCMP
+- Extract - There is no difference here for now. Both approaches require a connection to systems and extraction of data.
+- Transform - Whereas the case-centric approach requires you to create and populate your tables entirely with SQL, the object-centric approach eases the SQL burden on a few fronts:
+  - Modeling of objects and events is click-based and automates table creation.
+  - Populating (matching source data to objects and events) is simplified.
+  - It only requires simple SELECT statements.
+  - It is guided either through the import or with sample scripts in the editor.
+  - Final scripts are automated and remove SQL complexity (temp table creation and deletion, performance pitfalls, syntax issues, etc.)
+- Load - The workload here is reduced in the object-centric approach.
+  - There is no need to link tables in the data model as relationships already exist.
+  - You can create new data models (perspectives) and event logs with a few clicks based on your existing objects and events.
+  - No need to rework transformations to create new event logs. The system handles this if you've defined the needed objects and events.
+
+Can I use more than one system in one transformation script?
+- Yes you can. Each transformation has a main data source by default. To point to a different source in the transformation, use the data connection parameters. Here is a simple example with two databases in one transformation:
