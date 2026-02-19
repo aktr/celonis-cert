@@ -10,12 +10,8 @@ nested: XFHELQGBVZRDAECTMZUAFEHEXMSWNRBCSZEQEVCI
 REST id: 9b38a250-525b-42d6-95aa-a68ce848ad14
 REST secret: fd64skZtraiM0BzPHuVHfx5gIHwEB88wI308xKRgKsu2ItejG7mXaDAhthkpYItv
 
-## Data Integration Basics
+## [Data Integration Basics](https://academy.celonis.com/learn/course/data-integration-basics/data-integration-overview/refine-your-data-pipeline?client=partner)
 - Process Data is a set of connected activities with timestamps following one specific case = tracking steps 
-- Data Model connects
-  - one or more activity tables
-  - case tables
-  - and master data tables
 
 ### Data Integration Methods
 - **C** connect to source systems
@@ -24,11 +20,12 @@ REST secret: fd64skZtraiM0BzPHuVHfx5gIHwEB88wI308xKRgKsu2ItejG7mXaDAhthkpYItv
 - **L** load 
 
 ### Process Connectors = prebuilt data integrations
-- Process Connectors contain templates and scripts that support you in the connect, extract, transform, load, and scheduling steps of building your data pipeline
+- templates and scripts that support you in the connect, extract, transform, load, and scheduling steps of building your data pipeline
 
 ### Real-Time
 - frequently replicate **incremental** changes in data from source systems 
 - **non-real-time** data pipelines are typically mostly based on **scheduled full loads**
+- For Operational Data Model. In other words, it's for day-to-day work 
 - real-time data integration only for E and T step not for Data Model Load. L relies always on a scheduled jobs
 
 ### Advantages of real-time
@@ -42,9 +39,9 @@ REST secret: fd64skZtraiM0BzPHuVHfx5gIHwEB88wI308xKRgKsu2ItejG7mXaDAhthkpYItv
 
 ### Data Model
 - Data Model connects
-  - one or more activity tables
-  - case tables
-  - and master data tables
+  - case tables = order
+  - one or more activity tables = Event Log = what happend to order
+  - Master Data Table = extra context like seller name
 
 - Operational Data Model
   - Celonis recommends creating smaller, operational Data Models
@@ -56,15 +53,20 @@ REST secret: fd64skZtraiM0BzPHuVHfx5gIHwEB88wI308xKRgKsu2ItejG7mXaDAhthkpYItv
   - do not necessarily require real-time data.
   - regular complete loads of the data
 
-## Connect to Systems
+## [Connect to Systems](https://academy.celonis.com/learn/course/connect/structure-your-data-pools/structure-data-to-your-needs?client=partner&page=2)
 ### Main Connection Methods
 - Process Connectors (from the market place) **most common method**
 - Extractors (Data Connections)
-- Extractor Builder
+- Extractor Builder (REST API)
 - File Uploads
 - Data Ingestion API
 - Celoxtractor
 
+
+### Process Connectors
+- fastest and most common way for you to connect and cover the most established process use cases
+- download from the Celonis Marketplace
+- contains verything you need for ETL (Extract, Transform, Load)
 
 ### Extractors 
 - blank data connections with no reference to a process
@@ -93,10 +95,17 @@ REST secret: fd64skZtraiM0BzPHuVHfx5gIHwEB88wI308xKRgKsu2ItejG7mXaDAhthkpYItv
 ### File Upload
 - 1GB max size
 - multiple files can be uploaded at once in one table, but they need to have the same structure
+- Usecases:
+  - For additional static data
+  - For a list of translation terms
+  - For a list of permissions outside of your source systems
+  - For historical data that you know will never change
+  - For one-time uploads
 
 ### Data Ingestion API
 - push data into Celonis from Kafka or other tools
 - need basic programming skills to use it
+- replaces old Data Push API (no longer recommended)
 
 - Data Ingestion API Spec
   - One API call per table: Every table you create or update requires one API call.
@@ -132,6 +141,10 @@ REST secret: fd64skZtraiM0BzPHuVHfx5gIHwEB88wI308xKRgKsu2ItejG7mXaDAhthkpYItv
   4. Cloud Extractor transforms the files into parquet files.
   5. Cloud Extractor sends the transformed files to the Celonis Data Storage.
 
+- Why is the on-premise Extractor needed?
+  - On-premise systems typically can’t communicate with external applications.
+  - Network internal connections are a lot more stable and performant, resulting in a minimum load on the source system.
+
 ### Real-Time Connections/Extractions 
   1. Create Change Log tables to store changes
   2. Install Triggers to monitor and capture changes
@@ -161,13 +174,13 @@ https://academy.celonis.com/learn/course/connect/structure-your-data-pools/struc
 - In some cases, it also makes sense to create separate Data Pools for different regional or legal entities to restrict access to the data for certain users or user groups.
 
 
-## Extract Data
+## [Extract Data](https://academy.celonis.com/learn/course/extract/intro/learning-objectives?client=partner)
 ### Extractions can be done by
 - Data Jobs
 - or Replication Cockpit
 
 Questions to ask on picking the tool
-- Is the Process Connector / Extractor real-time?
+- Is the Process Connector/Extractor real-time?
 - Is the data needed for operational use cases (day-to-day actions)?
   
 ### Data Jobs
@@ -215,7 +228,8 @@ Questions to ask on picking the tool
 ### Metadata changes
 - To avoid delta load failures after metadata changes, you can activate the “include metadata changes” (added or removed columns in source system tables)
 - if the extraction does not include all columns of a table, metadata additions will not be extracted even if the option is selected.
-- When should you activate this option?
+
+- When should you activate this option? There are three points to consider here:
   - NULL values: Activating the option to include metadata changes may result in NULL values in your data. Let's imagine adding a new column to the table EKPO. This column provides information for each purchase order item, specifically if the item will be used internally or for an end product. However, this information will only be filled after the new column is added and will not be backfilled for past purchases. This may result in an inconsistency in the source system and will be reflected in the extracted data within Celonis.
   - Data type changes not handled: Also, note that if a metadata change is to the data type, the functionality will not handle the updates. For example, if a column’s data type changes from integers to a string the table will not correctly load. In this instance, a full load is required to remove the conflict.
   - Delta Loads are faster: If you are extracting tables that are continuously growing and extending, enabling this functionality will keep your delta loads running. In the end, Delta loads decrease your load time and are faster than full loads
@@ -246,7 +260,7 @@ Questions to ask on picking the tool
 - RC replication = DJ delta extraction
 - RC initialization = DJ full extractions 
 
-## Transform Data
+## [Transform Data](https://academy.celonis.com/learn/course/transform/intro/learning-objectives?client=partner)
 1. building one or more Activity Table(s) with all relevant process activities
 2. reworking as necessary your Case Table(s) and other relevant master data tables.
 
@@ -271,7 +285,6 @@ Questions to ask on picking the tool
 - Move WHERE conditions directly into JOINS. This is what with did with EKKO.BSTYP = 'F'. It could have been applied using a WHERE statement at the end of our scripts but we added it directly in the JOIN:
 - Use WHERE EXISTS instead of JOIN where possible. Don't use a JOIN if you only need to filter on another table.
 
-
 ### Tables vs Views in Transformations
 - Tables
   - when needs to be accessed in transformations
@@ -280,18 +293,22 @@ Questions to ask on picking the tool
   - A view is a stored query
   - tables that are **not** used in our other transformation could be view (e.g. P2P_EKPO, P2P_EKKO)
   
+### Data Job vs Replication Cockpit Transformations
+- **transformations process the full data** available in Celonis, **even when only a delta extraction** was performed.
+- only option to mitigate this is real-time transformations with RC
+
 ### Real-Time Transformations
 Steps:
 1. Identify the trigger table
 2. Define the transformation(s) on this Trigger Table
-3. Define dependent tables
+3. Define dependent tables: all tables that are being inner joined on or used in an EXIST statement.
 
 
 - Multiple activity tables are created
 - initilazation could run weekly or monthly. In contrast to Extraction where it should only run oce
 
 How does it works:
-1. Delta Extraction creates a staging table with delta records. 
+1. Delta Extraction creates a staging table with delta records. staging table = _CELONIS_TMP_ABC_TRANSFORM_DATA, activity table = TRIG
 2. Records are processed from Trasnformations. 
 3. The staging table is automatically emptied.
 
@@ -319,7 +336,7 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
   4. Move Temp Tables into queries or use triggered Temp Tables
   5. Define Dependencies
 
-## Data Model
+## [Data Model](https://academy.celonis.com/learn/course/load/set-up-your-data-model/course-recap?client=partner&page=3)
 
 ### Link Tables Correctly
 - The Fact (N) table is always the table with multiple rows for one row in the (1) table. So in the Activity to Case table relationship, the Activity table is the Fact table (N), and the Case table is the Dimension table(1). In other words there are always multiple activities for one Case ID
