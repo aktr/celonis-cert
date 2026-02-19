@@ -374,20 +374,29 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
 - no data job running on your tables while you are loading your data model
 - no delta extractions when no primary keys were defined
 
+### Most common errors
+- Mismatch of cases between Activity Table and Case Table
+- No distinct order with timestamp and sorting columns
+- Invalid associations between Activity Table and Case Table
+- Day-based activities detected
+- Could not execute foreign key join: there are duplicates on both sides of the specified key relationship
 
 ### Model Permissions
 - Usage Permissions: who can use the model for downstream activities in the Studio such as an Analyses.
 - Data Permissions: who can see which part of the data in the Data Model. Data Permissions allow you to restrict access to your Data Model for certain users. As an example, you could restrict the access of user A, in a way that the user could only see data for a specific company code when opening an analysis that builds on the respective data model.
 
-## Schedule Data Jobs
-
-### Schedules
+## [Schedule Data Jobs](https://academy.celonis.com/learn/course/schedule/intro/learning-objectives?client=partner&page=1)
 - they only apply to entire Data Jobs, not to single tasks
 - if a Data Job runs Extractions and Transformations, consider adding the applicable Data Model Load task
   - **Without a Data Model Load, your Data Job will have no effect on your Data Model**
   - if you use the Replication Cockpit for certain transactional tables (both full and delta extractions and transformations), you will still need scheduled Data Jobs for: Data Model Loads, the Delta and Full loads of tables you choose not to include in your Replication setup.
 - Trigger-based schedule: Trigger the next schedule after the last finished
 
+### Setup
+- Load Type: Full/Delta
+- Time-based/Trigger based on other job
+- Which data jobs to run
+- sequential or parallel
 
 ### Smart ETL
 - In the past extractions and transformations run sequentially
@@ -403,14 +412,13 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
 
 
 
-## Connect Multiple Systems
-- https://academy.celonis.com/learn/course/multiple-processes-and-systems/connect-multiple-systems/multiple-systems-for-one-process?client=partner
+## [Connect Multiple Systems](https://academy.celonis.com/learn/course/multiple-processes-and-systems/connect-multiple-systems/multiple-systems-for-one-process?client=partner)
 
 ### Parallel Scenario: one system per country
 - set up n connections, and then one Data Job for each connection.
 - you should now have n activity tables and every raw data table n times.
 - you can reuse extractions and transformations
-- resuse: Use Templates and Parameters
+- reuse: Use Templates and Parameters
 - Merge with Global Data Jobs
   - A Global Data Job can access all the tables in your data pool and isn’t limited to one specific data connection.
   - n+1 datajob: n for each country + 1 Global Data Job for merging
@@ -420,7 +428,7 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
 #### Global Data Jobs
 - own schema
 - access all data from the different schemas
-- can’t create extraction tasks in it,
+- can’t create extraction tasks in it, because it is not connected to a source system 
 - use UNION ALL for merging
 
 ### Sequential Scenario: different source systems with different structures, which run different steps of the process
@@ -454,6 +462,14 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
   - NOT Data permissions
   - NOT Data Connection details,
   - NOT actual data
+When you copy a version, you will need to:
+
+- map existing Connections to make sure the Data Jobs work on appropriate connections.
+- match Data Jobs to ensure Data Job alerts are kept in the target Data Pool.
+- match your Data Models in the target Data Pool. This is relevant if you are overwriting existing Data Models connected to Celonis objects in the target Data Pool.
+- decide if the version should be loaded directly or simply added as a version but not loaded.
+- You can copy versions to other teams you have access to on the same cluster.
+
 - you can copy a data pool
   - Extractions
   - Transformations
@@ -473,9 +489,9 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
   - NOT Job alerts
   - NOT The tables and data  
 
-## Boost your SQL Transformations
+## [Boost your SQL Transformations](https://academy.celonis.com/learn/course/sql-best-practices/transformation-best-practices/introduction?client=partner&page=1)
 ### Extract only the Necessary Data
-- adjust process connectors, to make sure they extract only necessary tables]
+- adjust process connectors, to make sure they extract only necessary tables
 - trim large tables (do you need all columns?)
 - use extraction filters
 
@@ -538,7 +554,7 @@ https://academy.celonis.com/learn/course/sql-best-practices/transformation-best-
 
 ### Staging Tables
 - Best practice for **Data Model** in CCMP
-- One staging table with all joins. View on top of this table which use only one join with the staging table
+- One staging table with all joins. View on top of this table which uses only one join with the staging table
 
 ### Table Terminology
 https://academy.celonis.com/learn/course/sql-best-practices/transformation-best-practices/usage-of-tables-temporary-tables-views-and-ctes?client=partner&page=4
@@ -554,7 +570,7 @@ https://academy.celonis.com/learn/course/sql-best-practices/transformation-best-
 ### Avoid Business Logic in Transformations
 - Business logic (KPI calculations, formulas, analyses, statistical evaluations, if/then/else) belong in the knowledge model
 
-## Push Data into Celonis (Data Ingestion API's )
+## [Push Data into Celonis (Data Ingestion API's)](https://academy.celonis.com/learn/course/data-ingestion-api-basics/main/data-ingestion-api-basics?client=partner)
 ### Specifications
 - One API call per table: Every table you create or update requires one API call.
 - Built on S3 API: It's built on top of the S3 API with the same methods and error codes. It uses primarily this S3 PUT object endpoint.
@@ -578,14 +594,14 @@ https://academy.celonis.com/learn/course/sql-best-practices/transformation-best-
 
 ### FAQ
 - it's push, so no schedules
-- Schema changes: As long as the primary key remains the same, a push with new columns will simply add the columns to the existing table and enter Null values if an older column is excluded.
+- Schema changes: As long as the primary key remains the same, a push with new columns will simply add the columns to the existing table and enter `NULL` values if an older column is excluded.
 - Delta loads
   - Delta loads (updates or new records) rely on the Primary Key and the Age field. The Age field is typically a date column that indicates when a record was created or updated.
   - If a new record is inserted with the same Primary Key value, then the one with the latest date is retained.
   - If no Age field is defined, then the new push's record is kept and updates the existing one.
   - Note that you can only define the Age column at the top table level. Nested tables rely solely on their primary keys and the parent table's fields for delta logic.
 
-## Extractor Builder Basics
+## [Extractor Builder Basics](https://academy.celonis.com/learn/course/extractor-builder-basics-q6vs/extractor-builder-basics/basics?client=partner)
 ### When to use it
 1. No existing extractor: There is no existing extractor for your source system and your source system allows access to source data via REST APIs.
 2. Customize existing extractor: There is an existing extractor but you would like to customize it to your needs. You could for example:
@@ -598,16 +614,18 @@ https://academy.celonis.com/learn/course/sql-best-practices/transformation-best-
 - static
 - use the parameter as a filter
 
+### Nested Responses
+- To ensure this nested table’s records are connected to the parent table, you need to define a primary key in the parent table.
+
 ### Dependent Endpoints
 - dependent endpoint takes another endpoint’s output as its input.
 
 
+## [Quality Assuring your Data Pipeline](https://academy.celonis.com/learn/course/quality-assuring-your-data-pipeline/main/quality-assuring-your-data-pipeline?client=partner&page=1)
 
 
------ 
-Build an Object-Centric Data Model
 
-## Object-Centric Process Mining: Foundations
+## [Object-Centric Process Mining: Foundations](https://academy.celonis.com/learn/course/object-centric-process-mining-foundations-1/object-centric-process-mining-foundations/introduction?client=partner)
 ### CCMP  
 - tracks one object (case) per process and maps all process events into a sequential event log
 - Value:
@@ -616,22 +634,23 @@ Build an Object-Centric Data Model
   - helping businesses to track process performance against specific KPIs.
   - allowing businesses to fully or partially automate actions based on process data.
 Limitation:
-  - restricted perspective
+  - restricted perspective | For example, in an Order Management process, a case is typically a Sales Order Item.
   - Incomplete information, like Duplicates events or missing events
 
-
-### OCMP
-- case
+### CCMP vs OCMP
+- CCMP
   - Restricted perspective: A limited, fragmented, and fixed perspective	
   - Incomplete information: Missing information and context based on selected case in event logs
   - High Effort: Higher start and update effort due to SQL-based event logs	
   - System dependence: Low scaling due to source system dependent scripts	
-- object
+- OCMP
   - Flexible multiple perspectives based on a single standardized model
   - More accuracy thanks to object modeling
   - Lower start and update effort thanks to UI-based modeling
   - Better scaling thanks to standardized and system-agnostic objects
 
+
+## [Build Object-Centric Data Models](https://academy.celonis.com/learn/course/build-object-centric-data-models/build-object-centric-data-models/course-build-object-centric-data-models?client=partner)
 #### Objects
 Expense Report
 Expense Line
@@ -668,7 +687,7 @@ https://academy.celonis.com/learn/course/build-object-centric-data-models/build-
   - t = dev env, c = changes, o = object, custom = for types you create
 
 o_custom = same as data input model
-c_o_custom = objects and there state through the process (joined with changes)
+c_o_custom = objects and their state through the process (joined with changes)
 e_custom = events
 r_e_custom_Eventname_Object = r_e_custom_SendToApprover__Expense = event relationships for one 2 many
 
@@ -709,7 +728,9 @@ Perspective =  create a sliced datamodel
 Can I use more than one system in one transformation script?
 - Yes you can. Each transformation has a main data source by default. To point to a different source in the transformation, use the data connection parameters. Here is a simple example with two databases in one transformation:
 
-
+### Deployment
+- "test changes" is always in draft mode
+- deployment replicates what you model in the Objects and Events interface to your connected OCPM Data Pool
 
 
 
@@ -739,3 +760,17 @@ Can I use more than one system in one transformation script?
   - Extracted tables can be used by all projects (data pools) simultaneously.
   - Not every user can access every table and every record.
   - Data preparation, business logic, formatting, consolidations, etc. should be managed centrally and consumed by all projects.  
+
+
+
+Merging Activity Tables 
+Here the Case IDs were all brought under Table2's Case IDs using the join path. The Activities with their respective Timestamps were merged. Additional columns from each table were added and left with null where no value was available.
+
+When you use the Eventlog automerge, you'll have the merged eventlog table named _CEL_MERGED_ACTIVITIES available after your Data Model is loaded. You can use this table as any other eventlog(Activity) table in your analyses.
+
+Going back to our question, when should you merge? Merging your activity tables makes sense if you want to work with one sequential activity table. If you don't, then keeping separate Activity tables in your Data Model makes more sense.
+
+Merging in PQL
+Note that Eventlog automerge is just a shortcut for using the MERGE_EVENTLOG PQL operator in your analyses. You can still merge Activity tables (Eventlogs) on the go using the PQL operator in your analyses if you choose not to do it in Data Integration. Using PQL gives you greater flexibility on the merge as you can choose which columns to keep.
+Note that some merges result in duplicate results. In those cases, you should use the “merge event log distinct” option.
+
