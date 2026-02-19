@@ -89,13 +89,10 @@ REST secret: fd64skZtraiM0BzPHuVHfx5gIHwEB88wI308xKRgKsu2ItejG7mXaDAhthkpYItv
      -  pagination
      -  response configuration
      -  response rules: e.g. skip 500 status
-  
- More to come in this course: https://academy.celonis.com/learn/course/extractor-builder-basics-q6vs/extractor-builder-basics/basics?client=partner
 
 ### File Upload
 - 1GB max size
 - multiple files can be uploaded at once in one table, but they need to have the same structure
-
 
 ### Data Ingestion API
 - push data into Celonis from Kafka or other tools
@@ -135,7 +132,7 @@ REST secret: fd64skZtraiM0BzPHuVHfx5gIHwEB88wI308xKRgKsu2ItejG7mXaDAhthkpYItv
   4. Cloud Extractor transforms the files into parquet files.
   5. Cloud Extractor sends the transformed files to the Celonis Data Storage.
 
-### Real-Time Connections/Extarctions 
+### Real-Time Connections/Extractions 
   1. Create Change Log tables to store changes
   2. Install Triggers to monitor and capture changes
   3. Activate a cleanup background job to clean up the Log tables (SAP-specific)
@@ -162,6 +159,7 @@ https://academy.celonis.com/learn/course/connect/structure-your-data-pools/struc
 #### Best practices for Data Pools
 - keep all **related** processes and systems within one Data Pool
 - In some cases, it also makes sense to create separate Data Pools for different regional or legal entities to restrict access to the data for certain users or user groups.
+
 
 ## Extract Data
 ### Extractions can be done by
@@ -227,22 +225,22 @@ Questions to ask on picking the tool
 - Apply filters to extract only the data you need
 - Adjust the "Maximum number of parallel extractions"
 
-## Extractions with Replication Cockpit
+### Extractions with Replication Cockpit
 - Benefits
-  - Real-time connectivity: Extractions are orchestrated automatically without user-defined schedules.
+  - Real-time connectivity: Extractions are orchestrated automatically **without** user-defined schedules.
   - Automatic self-recovery: Extractions will correct and re-execute in case of temporary failures.
   - Speed & stability: Extractions run faster and are less error-prone because they are separated from transformations.
 - Recommended: Transactional Tables (full and delta loads), not for Metadata Tables
   - Transactional Tables = typically change very frequently.
 
-
+### Prerequisites
 - Need a connection that supports change logs and triggers in the source system, e.g. SAP ECC or S/4HANA
 - If an added table does not have a trigger/change log, you'll see a warning that these objects don't exist in the source system.
 - You can use a replication template to easily set it up
 - deleted records: you can decide to keep them in a separate table or delete them right away
-- you can use data pool parameter (but not create ne local parameters)
+- you can use data pool parameter (but not create new local parameters)
 - Initilazation join configuration = (Full Extraction) -> only on full load
-- You have to Initizalize the table (initial load), but you can skip it if you want by clicking "replicate (all)
+- You have to Initizalize the table (initial load), but you can skip it if you want by clicking "replicate (all)"
 - In Scope setting: replication frequency, on error, calender
 - you can set up emails whenever a table goes into a degraded state
 - RC replication = DJ delta extraction
@@ -262,7 +260,7 @@ Questions to ask on picking the tool
 -  more detailed information on vendors.
 
 ### Templates
-- create by converting transformation into template. 
+- can be created by converting custom transformations into template. 
   - manage centrally, changes effect all
   - you can use parameter in templates
 
@@ -290,16 +288,16 @@ Steps:
 
 
 - Multiple activity tables are created
-- initilazation could run weekly or monthly. Im Gegensatz zu Extraction where it should only run oce
+- initilazation could run weekly or monthly. In contrast to Extraction where it should only run oce
 
 How does it works:
 1. Delta Extraction creates a staging table with delta records. 
 2. Records are processed from Trasnformations. 
 3. The staging table is automatically emptied.
 
-- Delta Extraction use delete and insert instead of drop and create
+- Delta Extraction use `DELETE` and `INSERT` instead of `DROP` and `CREATE`
 - Delta Extraction use tables not views
-- Initialization scripts should create empty tables. Adding a "LIMIT 0"
+- Initialization scripts should create empty tables. Adding a `LIMIT 0`
 - Select all columns specifically
 - Move Temp Tables into queries or use triggered Temp Tables
 
@@ -310,18 +308,16 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
   1. Identify the Trigger Table
   2. Select the Staging Table in query
   3. Use tables instead of views
-  4. Use Delete + Insert approach
+  4. Use `DELETE` + `INSERT` approach
   5. Move Temp Tables into queries or use triggered Temp Tables
   6. Select all columns specifically
   7. Define dependencies
 - Add Activities   
   1. Identify the Trigger Table
   2. Split the Activity Table into many based on Trigger Tables
-  3. Use INSERT + WHERE NOT EXISTS in most cases (adjust based on effect of updates in Trigger Tables on your Activity Table)
+  3. Use `INSERT` and `WHERE NOT EXISTS` in most cases (adjust based on effect of updates in Trigger Tables on your Activity Table)
   4. Move Temp Tables into queries or use triggered Temp Tables
   5. Define Dependencies
-
-
 
 ## Data Model
 
@@ -331,7 +327,7 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
 - The Data Model only works with 1:N or 1:1 relationships. Cyclic relationships or M:N relationships should be avoided as they cause issues in the Data Model load and Analyses.
 
 ### How to
-1. create Activity Table
+1. Create Activity Table
 2. Create case table and master data tables
 3. Create relationships between tables in the Data Model (foreign key)
 4. explicit assign case table
@@ -340,9 +336,9 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
 - Data Storage + Query Engine = Process Data Engine
 
 ### Data Flow
-1. Extraction: The first step is an extraction from a source system. As per an extraction configuration, Celonis calls the requested data from a source system directly or from an Extractor server installed in a closed hosting environment. This data lands in a transactional database known as the Celonis Data Storage.
-2. Transformation: Next, the data is transformed according to your transformations and all new tables and results are also stored in the Data Storage.
-3. Data Model Load: Once you’ve defined your Data Model and load it, Celonis pulls the data from Data Storage, transforms it into several parquet files (here is a good parquet definition), and using metadata information on your Data Model’s schema, stores it into the Query Engine. The Query Engine is an analytical database best suited for Analyses.
+1. **Extraction**: The first step is an extraction from a source system. As per an extraction configuration, Celonis calls the requested data from a source system directly or from an Extractor server installed in a closed hosting environment. This data lands in a transactional database known as the _Celonis Data Storage_.
+2. **Transformation**: Next, the data is transformed according to your transformations and all new tables and results are also stored in the _Data Storage_.
+3. **Data Model Load**: Once you’ve defined your Data Model and load it, Celonis pulls the data from Data _Data Storage_, transforms it into several parquet files, and using metadata information on your Data Model’s schema, stores it into the _Query Engine_. The Query Engine is an analytical database best suited for Analyses.
 4. Downstream Activities in Studio: From here, you can now use this Data Model to create Analyses and other Celonis objects in the Studio.
 
 ### Partial Data Model Loads
@@ -377,7 +373,7 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
 
 
 ### Smart ETL
-- before extractions and transformations run sequentially
+- In the past extractions and transformations run sequentially
 - Celonis runs your extractions and transformations in Data Jobs in the optimal way
 - turned on by default on task level
 - you can activate Smart ETL at the schedule level.
@@ -388,10 +384,12 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
 3. Uses DAG to trigger all extraction and transformation tasks based on the optimal calculated execution order. For example, once a table is extracted, the related transformations start automatically (while independent tables might still be in extraction).
 
 
-## Monitor and Validate your Data Pipeline (optional)
+
 
 ## Connect Multiple Systems
-#### parallel scenario: one system per country
+- https://academy.celonis.com/learn/course/multiple-processes-and-systems/connect-multiple-systems/multiple-systems-for-one-process?client=partner
+
+### Parallel Scenario: one system per country
 - set up n connections, and then one Data Job for each connection.
 - you should now have n activity tables and every raw data table n times.
 - you can reuse extractions and transformations
@@ -402,43 +400,53 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
   - create one transformation per table
   - use UNION ALL for merging
 
-#### Sequential Scenario: different source systems with different structures, which run different steps of the process
-- separate Data Jobs with different extractions and transformations, since they are different per system.
-- merge only activity table into one table. Do not merge raw data tables, since they are different per system.
-
 #### Global Data Jobs
 - own schema
 - access all data from the different schemas
 - can’t create extraction tasks in it,
 - use UNION ALL for merging
 
+### Sequential Scenario: different source systems with different structures, which run different steps of the process
+- separate Data Jobs with different extractions and transformations, since they are different per system.
+- merge only activity table into one table. Do not merge raw data tables, since they are different per system.
+
+
 #### Unrelated Processes from One System
-- e.g. Purchase-to-Pay data as well as the Accounts Payable in on esystem. But they are unrelated processes, so they should be kept separate.
+- e.g. Purchase-to-Pay data as well as the Accounts Payable in one system. But they are unrelated processes, so they should be kept separate.
 - apart from the extraction job, you can keep the rest of your work separate in one Data Pool.
 
 #### Multiple Related Processes
-- use multiple Activity and Case Tables in one Data Pool =  Multi event log
+- use multiple Activity and Case Tables in one Data Pool = Multi event log
 - first Activity Table you define is the Default Activity Table. 
 - Eventlog can be autommerged in PQL, but they are not merged in the Data Model. So you can keep them separate in the Data Model and merge them in Analyses and PQL when needed.
-- cases for Multi-Event Log:
-  - To put independent processes into context (filter across processes). 
-  - To analyze parallel processes by linking multiple hierarchical Event Logs.
-  - To reduce transformation script efforts (no joins) by merging Event Logs.
-  - To visualize end-to-end processes by linking multiple Event Logs.
+- 
+#### Usecases for Multi-Event Log = Multiple Related Processes
+- To put independent processes into context (filter across processes). 
+- To analyze parallel processes by linking multiple hierarchical Event Logs.
+- To reduce transformation script efforts (no joins) by merging Event Logs.
+- To visualize end-to-end processes by linking multiple Event Logs.
 
 ### Working with Data Pools
 - you can sharing Data Connection between pools, if enabled
 - you can version your datapool 
-  - Data Jobs,
-  - Process Data Models,
-  - Data Parameters,
-  - Task Templates,
-  - Schedules.
+  - Data Jobs
+  - Process Data Models
+  - Data Parameters
+  - Task Templates
+  - Schedules
   - NOT Data permissions
   - NOT Data Connection details,
   - NOT actual data
 - you can copy a data pool
-- you can copy datat jobs
+  - Extractions
+  - Transformations
+  - Local parameters
+  - Templates
+  - NOT Data Pool parameters
+  - NOT Data Model Load tasks
+  - NOT Job alerts
+  - NOT The tables and data
+- you can copy data jobs
   - Extractions
   - Transformations
   - Local parameters
@@ -447,10 +455,6 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
   - NOT Data Model Load tasks
   - NOT Job alerts
   - NOT The tables and data  
-
-
-## Extraction Performance Best Practices (optional)
-- Enables data consistency for delta extractions, enables resumable/restartable extractions, increases performance.
 
 ## Boost your SQL Transformations
 ### Extract only the Necessary Data
@@ -471,32 +475,33 @@ https://academy.celonis.com/learn/course/transform/replication-cockpit-set-up-tr
 
 ### Table Statistics
 - summaries of tables that assist the query optimizer in making better decisions
-- **source** table statistics are automatically gathered for each table after the extraction.
-- For additional tables created during the transformation phase—e.g., the temporary join table TMP_CDHDR_CDPOS, or data model tables you create—it's necessary to create statistics explicitly. In general, we recommend you add statistics to all tables created and used in your transformations.
-- Also, if you significantly change existing tables with INSERTs, DELETEs, or UPDATES, we advise you refresh statistics.
+- **source table** statistics are automatically gathered for each table after the extraction.
+- For additional tables created during the transformation phase — e.g., the temporary join table TMP_CDHDR_CDPOS, or data model tables you create—it's necessary to create statistics explicitly. In general, we recommend you add statistics to all tables created and used in your transformations.
+- Also, if you significantly change existing tables with `INSERT`, `DELETE`, or `UPDATE`, we advise you refresh statistics.
 - For tables that have less than 10K records, we do not recommend creating statistics.  This is because the effort to create the statistics for these small tables in Vertica outweighs the time saved by the statistics.
 - Why are table statistics so important: Among many benefits, table statistics are especially crucial for query execution plans with hash joins. They enable the query optimizer to choose the smaller table to build the hash table (instead of the bigger one). In most scenarios, this prevents an “inner join did not fit into memory” error and improves performance.
 - How  to create statistics : `SELECT ANALYZE_STATISTICS ('TABLE_NAME');`
 - how to check if there are statistics:
-```
+
+```sql
 SELECT anchor_table_name AS TableName
 FROM projections
 WHERE has_statistics = FALSE ;
 ```
 
 ### General Best Practices
-- WHERE EXISTS instead of JOIN: when you just filter and do not need the column
-- do not use DISTINCT
-- Use UNION ALL instead of UNION
-- Use BETWEEN instead of AND for Ranges
+- `WHERE EXISTS` instead of `JOIN`: when you just filter and do not need the column
+- do not use `DISTINCT`
+- Use UNION ALL instead of `UNION`
+- Use `BETWEEN` instead of `AND` for Ranges
 
 ### Temporary Join Tables
 - Auto-projections: all table columns and are sorted by the first 8 fields
 - you can add custom projections
 
-- Common Table Expressions
+- Common Table Expressions (CTE)
   - for OCPM Transformations
-  - "WITH ... AS" statement
+  - `WITH ... AS` statement
 
 ### RECAP
 - CREATE TABLE	
@@ -516,48 +521,21 @@ https://academy.celonis.com/learn/course/sql-best-practices/transformation-best-
 
 ### Staging Tables
 - Best practice for **Data Model** in CCMP
-- One staging table with all joins. View on top of this tabel which use only one join with the staging table
+- One staging table with all joins. View on top of this table which use only one join with the staging table
 
 ### Table Terminology
 https://academy.celonis.com/learn/course/sql-best-practices/transformation-best-practices/usage-of-tables-temporary-tables-views-and-ctes?client=partner&page=4
 
 
 ### DELETE and UPDATE Statements
-- Avoiding DELETE and UPDATE
-- Rebuild Tables instead of DELETE and UPDATE
+- Avoiding `DELETE` and `UPDATE`
+- Rebuild Tables instead of `DELETE` and `UPDATE`
   - create new table and drop old one (and add table statistics)
-- if you really neddd DELETE/UPDATE use smaller parts/chunks `DELETE FROM BSEG WHERE GJAHR=2020;` 
+- if you really neddd `DELETE/UPDATE` use smaller parts/chunks `DELETE FROM BSEG WHERE GJAHR=2020;` 
 - When limiting the query through a condition, select a field that appears at the beginning of the table field 
 
 ### Avoid Business Logic in Transformations
 - Business logic (KPI calculations, formulas, analyses, statistical evaluations, if/then/else) belong in the knowledge model
-
-
-## Data Model Load Performance Best Practices (Optional)
-- On top of delta extractions and delta transformations, you can set up delta data model loads
-  - Each table needs an identifier (primary key) in the data model
-  - Add the "epoch" column to each view in your data model. This column is available hidden in each table.
-- Partial Data Model Load
-  - selectively reload individual tables of a data model.
-- Reduce or Disable Cache Preheating
-  - Prheating cache for PQL. Mayeb makes no sense when fast data model load has a higher priority than a fast frontend performance
-  
-
-## General ETL Pipeline Performance Best Practices (Optional)
-- Split the ETL Pipeline Based on the Type of Use
-  - Analytics use-cases 
-  - Operational use-cases
-- Parallel ETL Based on Target Group
-  - reating dedicated data pipelines for each region, country, business unit, or factory
-- Use Trigger Based Schedules
-  - based on the successful execution
-  - avoids unnecessary waiting
-  - using trigger-based schedules, For sequential data jobs **across** data pools. Within Datapool use "optimized schedule execution"
-- Optimize Data Pool Architecture
-  - Every table is only extracted once(exceptions possible) from a source system.
-  - Extracted tables can be used by all projects (data pools) simultaneously.
-  - Not every user can access every table and every record.
-  - Data preparation, business logic, formatting, consolidations, etc. should be managed centrally and consumed by all projects.
 
 ## Push Data into Celonis (Data Ingestion API's )
 ### Specifications
@@ -663,9 +641,7 @@ Reject Report
   - To put it simply, the goal of your work with objects is to create their shell (name and attributes), identify how they relate to each other (relationships), and fill the object shells and relationships with data (transformations).
 
 #### Relationships
-   m:1 relationships" a foreign key is added as an attribute to the object on the m side.
-
-
+- m:1 relationships a foreign key is added as an attribute to the object on the m side.
 - Handling m:n relationships
   - an extra join table needs to be created to map the relationship.
   
@@ -715,3 +691,34 @@ Perspective =  create a sliced datamodel
 
 Can I use more than one system in one transformation script?
 - Yes you can. Each transformation has a main data source by default. To point to a different source in the transformation, use the data connection parameters. Here is a simple example with two databases in one transformation:
+
+
+
+
+
+## Monitor and Validate your Data Pipeline (optional)
+## Extraction Performance Best Practices (optional)
+- Enables data consistency for delta extractions, enables resumable/restartable extractions, increases performance.
+## Data Model Load Performance Best Practices (Optional)
+- On top of delta extractions and delta transformations, you can set up delta data model loads
+  - Each table needs an identifier (primary key) in the data model
+  - Add the "epoch" column to each view in your data model. This column is available hidden in each table.
+- Partial Data Model Load
+  - selectively reload individual tables of a data model.
+- Reduce or Disable Cache Preheating
+  - Preheating cache for PQL. Maybe makes no sense when fast data model load has a higher priority than a fast frontend performance
+## General ETL Pipeline Performance Best Practices (Optional)
+- Split the ETL Pipeline Based on the Type of Use
+  - Analytics use-cases 
+  - Operational use-cases
+- Parallel ETL Based on Target Group
+  - creating dedicated data pipelines for each region, country, business unit, or factory
+- Use Trigger Based Schedules
+  - based on the successful execution
+  - avoids unnecessary waiting
+  - using trigger-based schedules, For sequential data jobs **across** data pools. Within Datapool use "optimized schedule execution"
+- Optimize Data Pool Architecture
+  - Every table is only extracted once(exceptions possible) from a source system.
+  - Extracted tables can be used by all projects (data pools) simultaneously.
+  - Not every user can access every table and every record.
+  - Data preparation, business logic, formatting, consolidations, etc. should be managed centrally and consumed by all projects.  
