@@ -649,6 +649,85 @@ Limitation:
   - Lower start and update effort thanks to UI-based modeling
   - Better scaling thanks to standardized and system-agnostic objects
 
+## [Build Object-Centric Data Models](https://academy.celonis.com/learn/course/build-object-centric-data-models/build-object-centric-data-models/build-object-centric-data-models-introduction?page=1) UPDATE EXAM
+
+### Gathering Requirements with an Object-Centric Mindset
+There are three basic steps to gathering requirements for an object-centric process mining project.
+
+- Understand the problem you want to solve
+- Identify objects, events, and their relationships
+- Identify data sources
+If you are familiar with requirements gathering for case-centric process mining, these steps should sound very familiar. The main difference is that you should look at data from an object-centric perspective rather than a case-centric perspective.
+
+### Understand the Problem You Want to Solve
+- What is the target process area we want to improve?
+- What are the business objectives?
+- What are the key metrics?
+- What are the value opportunities?
+
+### Identify Events and Objects
+- What is the ideal process flow (happy path) for the target process?
+- For each event, which documents or objects are involved?
+
+
+### Create Objects
+You have two options when working with objects, you can:
+- Manually create the objects, relationships, and transformations.
+- Import your objects from tables
+
+To put it simply, the goal of your work with objects is to create 
+- their shell (name and attributes), 
+- identify how they relate to each other (relationships), 
+- and fill the object shells and relationships with data (transformations).
+
+### building blocks of objects
+- Attributes
+- Relationships
+- Transformations
+
+### Celonis Release Management
+
+Reminder: Test changes pushes your transformations to the OCPM Data Pool in the "test:ocpm-data-job" data job and runs the data job.
+- From here you can click 'Show logs' to jump straight to the data job logs and ensure all is ok.
+
+You want the results in Studio quickly
+- use the "test changes" -> deploys to development and runs perspective of your choice 
+
+Create Version:
+- You can choose which changes to include
+Deploy to production
+- data job does not load automatically, not like in "test draft"
+
+Any Analyst with edit rights on data pool can work with versions nand deployments
+
+
+#### Release Management of Apps
+- create version of the app (curent state of the app)
+- you can select specific assets
+- next step after versioning is to deploy
+- There is a checkmark "Open deployment after creating version" to make the process easier
+- package history for old versions and older deployments
+
+
+### Create Events
+#### Import Events From Tables
+- Import is much faster than manual modeling
+- guided experience
+- Import form datasource not from objects: why? less modeling and scripting
+Options (transform your data first to the best fitting option)
+- Event from columns: each time stamped column represents one event
+- Events from rows with activity column: you have preexisting event log or activity table + timestamp
+- Events from rows with old and new value columns: old and new value + timestamp
+Mandatory Attributes
+- id, time
+Process
+- match source columns with target columns )target columns are based on the option you have chosen
+- create Relationship
+
+Best Practice:
+- One Event that cover many differnt changes. Have one event and divide it by attribute of your choice
+  -> you can do it in the Event Log Builder in Studio (concat attributes into activity name - "relable event") => automatic capture of new/unknown events
+### Identify Data Sources
 
 ## [Build Object-Centric Data Models](https://academy.celonis.com/learn/course/build-object-centric-data-models/build-object-centric-data-models/course-build-object-centric-data-models?client=partner)
 #### Objects

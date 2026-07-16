@@ -133,7 +133,7 @@ access: https://fox57xlh-2026-02-04.training.celonis.cloud/package-manager/ui/vi
 - not the same as AI. RPAs only perform tasks
 
 ### Why
-- Increading number of automation use cases. Multiple use cases require automation actions in the front end UI
+- Increasing number of automation use cases. Multiple use cases require automation actions in the front end UI
 - Maximize a single Action Flow to combine API-led automation of Action Flows with UI;led automation of RPAs
 
 ### How
@@ -145,7 +145,7 @@ Actions: Actions are **links between an Action Flow and a button** in the Celoni
 
 ### types of automations
 - attended: Actions
-- unattended:  Action Flow Triggers.
+- unattended: Action Flow Triggers.
 
 ### Attended
 - when human judgment is needed. 
