@@ -649,6 +649,7 @@ Limitation:
   - Lower start and update effort thanks to UI-based modeling
   - Better scaling thanks to standardized and system-agnostic objects
 
+[//]: # (UPDATE EXAM START)
 ## [Build Object-Centric Data Models](https://academy.celonis.com/learn/course/build-object-centric-data-models/build-object-centric-data-models/build-object-centric-data-models-introduction?page=1) UPDATE EXAM
 
 ### Gathering Requirements with an Object-Centric Mindset
@@ -727,7 +728,8 @@ Process
 Best Practice:
 - One Event that cover many differnt changes. Have one event and divide it by attribute of your choice
   -> you can do it in the Event Log Builder in Studio (concat attributes into activity name - "relable event") => automatic capture of new/unknown events
-### Identify Data Sources
+
+[//]: # (UPDATE EXAM ENDS)
 
 ## [Build Object-Centric Data Models](https://academy.celonis.com/learn/course/build-object-centric-data-models/build-object-centric-data-models/course-build-object-centric-data-models?client=partner)
 #### Objects
